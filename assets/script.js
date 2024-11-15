@@ -1,4 +1,4 @@
-// Tableau des slides
+// Tableau des slides (déjà défini)
 const slides = [
   {
     image: "slide1.jpg",
@@ -19,35 +19,61 @@ const slides = [
   },
 ];
 
-// Sélection des éléments de la bannière et des flèches
+// Sélection des éléments nécessaires
 const bannerImage = document.querySelector(".banner-img");
 const bannerTagLine = document.querySelector("#banner p");
 const arrowLeft = document.querySelector(".arrow_left");
 const arrowRight = document.querySelector(".arrow_right");
+const dotsContainer = document.querySelector(".dots"); // Conteneur des bullet points
 
-let currentSlide = 0;
+let currentSlide = 0; // Slide actif
 
-// Fonction pour afficher le slide actuel
-function updateSlide(index) {
-  bannerImage.src = `./assets/images/slideshow/${slides[index].image}`;
-  bannerTagLine.innerHTML = slides[index].tagLine;
+// Fonction pour créer les bullet points dynamiquement
+function createDots() {
+  slides.forEach((_, index) => {
+    const dot = document.createElement("span");
+    dot.classList.add("dot");
+    if (index === currentSlide) {
+      dot.classList.add("dot_selected"); // Ajoute la classe pour le slide actif
+    }
+    dotsContainer.appendChild(dot);
+
+    // Ajout d'un event listener pour naviguer via les bullet points
+    dot.addEventListener("click", () => {
+      updateSlide(index); // Passe au slide correspondant au bullet point
+    });
+  });
 }
 
-// Écouteur pour la flèche gauche
+// Fonction pour mettre à jour le slide
+function updateSlide(index) {
+  // Mise à jour de l'image et du texte
+  bannerImage.src = `./assets/images/slideshow/${slides[index].image}`;
+  bannerTagLine.innerHTML = slides[index].tagLine;
+
+  // Mise à jour des bullet points
+  document.querySelectorAll(".dot").forEach((dot, idx) => {
+    if (idx === index) {
+      dot.classList.add("dot_selected");
+    } else {
+      dot.classList.remove("dot_selected");
+    }
+  });
+
+  currentSlide = index; // Met à jour l'index du slide actif
+}
+
+// Event listeners pour les flèches
 arrowLeft.addEventListener("click", () => {
-  console.log("Flèche gauche cliquée");
-  alert("Vous avez cliqué sur la flèche gauche");
-  currentSlide = currentSlide > 0 ? currentSlide - 1 : slides.length - 1;
-  updateSlide(currentSlide);
+  const newSlide = currentSlide > 0 ? currentSlide - 1 : slides.length - 1;
+  updateSlide(newSlide);
 });
 
-// Écouteur pour la flèche droite
 arrowRight.addEventListener("click", () => {
-  console.log("Flèche droite cliquée");
-  alert("Vous avez cliqué sur la flèche droite");
-  currentSlide = currentSlide < slides.length - 1 ? currentSlide + 1 : 0;
-  updateSlide(currentSlide);
+  const newSlide = currentSlide < slides.length - 1 ? currentSlide + 1 : 0;
+  updateSlide(newSlide);
 });
 
-// Afficher le premier slide au chargement
-updateSlide(currentSlide);
+// Initialisation
+createDots(); // Crée les bullet points
+updateSlide(currentSlide); // Affiche le premier slide
